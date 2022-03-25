@@ -21,7 +21,7 @@ client.on("messageCreate", (message) => {
   } else if (message.content.startsWith("!embed")) {
     const embed = new MessageEmbed()
       .setTitle("Embed")
-      .setDescription(message.content)
+      .setDescription(message.content.slice(7))
       .setAuthor({
         name: message.author.username,
         iconURL: "https://i.imgflip.com/69vvn3.jpg",
