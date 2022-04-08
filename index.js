@@ -43,14 +43,6 @@ client.on("interactionCreate", async (interaction) => {
     await interaction.reply(`${num1 + num2}`);
     return;
   }
-  // if (interaction.commandName === "hello") {
-  //   await interaction.reply("Hello World!");
-  //   return;
-  // }
-  // if (interaction.commandName === "info") {
-  //   await infoHandler(interaction);
-  //   return;
-  // }
 });
 
 client.on("messageCreate", (message) => {
