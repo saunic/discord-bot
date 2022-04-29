@@ -1,5 +1,10 @@
 // Require the necessary discord.js classes
-const { Client, Intents, MessageEmbed } = require("discord.js");
+const {
+  Client,
+  Intents,
+  MessageEmbed,
+  InteractionWebhook,
+} = require("discord.js");
 const { token, clientID, guildID } = require("./config.json");
 
 // Create a new client instance
@@ -23,10 +28,33 @@ const commands = [
     .setName("add")
     .setDescription("adds two numbers together")
     .addIntegerOption((option) =>
-      option.setName("num1").setDescription("first number").setRequired(true)
+      option
+        .setName("num1")
+        .setDescription("first number")
+        .setRequired(true)
+        .setMinValue(0)
     )
     .addIntegerOption((option) =>
-      option.setName("num2").setDescription("second number").setRequired(true)
+      option
+        .setName("num2")
+        .setDescription("second number")
+        .setRequired(true)
+        .setMinValue(0)
+    ),
+  new SlashCommandBuilder()
+    .setName("praise")
+    .setDescription("Praise the users in your server!")
+    .addUserOption((option) =>
+      option
+        .setName("user")
+        .setDescription("The user you want to praise")
+        .setRequired(true)
+    )
+    .addStringOption((option) =>
+      option
+        .setName("reason")
+        .setDescription("Reason you want to praise them")
+        .setRequired(true)
     ),
 ].map((command) => command.toJSON());
 const rest = new REST({ version: 9 }).setToken(token);
@@ -40,8 +68,30 @@ client.on("interactionCreate", async (interaction) => {
   if (interaction.commandName === "add") {
     const num1 = interaction.options.getInteger("num1");
     const num2 = interaction.options.getInteger("num2");
-    await interaction.reply(`${num1 + num2}`);
-    return;
+    // defers reply by 15 mins eg for db queries:
+    // await interaction.deferReply();
+    // says "bot is thinking"
+    //if reply deferred, can't send a reply. Can only do edit reply
+    // await interaction.reply(`The sum of those two numbers is ${num1 + num2}`);
+    // await interaction.followUp(
+    //   `The difference between those two numbers is ${num1 - num2}`
+    // );
+    // await interaction.editReply(`Difference: ${num1 - num2}`);
+    //can make replies ephemeral/temporary:
+    await interaction.reply({
+      content: `Sum: ${num1 + num2}`,
+      ephemeral: true,
+    });
+  }
+  if (interaction.commandName === "praise") {
+    try {
+      const user = interaction.options.getUser("user");
+      const reason = interaction.options.getString("reason");
+
+      await interaction.reply(`<@!${user.id}> was praised for ${reason}`);
+    } catch (e) {
+      console.log(e);
+    }
   }
 });
 
